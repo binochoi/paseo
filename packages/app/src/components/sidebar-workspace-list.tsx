@@ -1079,21 +1079,6 @@ function WorkspaceRowInner({
   const isCompact = useIsCompactFormFactor();
   const [isPressed, setIsPressed] = useState(false);
   const isTouchPlatform = platformIsNative || isCompact;
-  const rowRef = useRef<View>(null);
-  const setActivatorNodeRef = dragHandleProps?.setActivatorNodeRef;
-  const combinedRef = useCallback(
-    (node: View | null) => {
-      (rowRef as MutableRefObject<View | null>).current = node;
-      if (typeof setActivatorNodeRef === "function") setActivatorNodeRef(node as never);
-    },
-    [setActivatorNodeRef],
-  );
-
-  useEffect(() => {
-    if (selected && platformIsWeb && rowRef.current) {
-      (rowRef.current as unknown as HTMLElement).scrollIntoView?.({ block: "nearest" });
-    }
-  }, [selected]);
   const interaction = useLongPressDragInteraction({
     drag,
     menuController,
@@ -1142,7 +1127,7 @@ function WorkspaceRowInner({
           <View
             {...dragAttributes}
             {...dragHandleProps?.listeners}
-            ref={combinedRef}
+            ref={dragHandleProps?.setActivatorNodeRef as unknown as Ref<View>}
             style={styles.workspaceRowContainer}
             {...hoverHandlers}
           >
