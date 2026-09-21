@@ -75,6 +75,7 @@ export function buildConfigOverrides(record: StoredAgentRecord): Partial<AgentSe
     toolPolicy: record.config?.toolPolicy ?? undefined,
     systemPrompt: record.config?.systemPrompt ?? undefined,
     mcpServers: record.config?.mcpServers ?? undefined,
+    extraArgs: record.config?.extraArgs ?? undefined,
   });
 }
 

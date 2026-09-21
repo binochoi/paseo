@@ -222,6 +222,58 @@ describe("openAgentProfileForm", () => {
     expect(model.getState().disclosure.showModelField).toBe(true);
   });
 
+  describe("launch arguments", () => {
+    const OPENCODE: ProviderSnapshotEntry = {
+      provider: "opencode",
+      status: "ready",
+      enabled: true,
+      label: "OpenCode",
+      supportsExtraArgs: false,
+    };
+
+    it("reads stored arguments back as one line and saves them split", () => {
+      const model = openAgentProfileForm({
+        mode: "edit",
+        profile: {
+          id: "p1",
+          name: "Bare",
+          provider: "claude",
+          extraArgs: ["--no-project-config", "a b"],
+        },
+      });
+      model.applyProviderCatalog([{ ...CLAUDE, supportsExtraArgs: true }]);
+
+      expect(model.getState().launchArgs).toBe("--no-project-config 'a b'");
+      model.setLaunchArgs(`--no-project-config --name "x y"`);
+      expect(model.getState().submitValue?.extraArgs).toEqual([
+        "--no-project-config",
+        "--name",
+        "x y",
+      ]);
+    });
+
+    it("leaves extraArgs out when the text is blank", () => {
+      const model = openWithCatalog({ mode: "create" });
+      model.setName("Blank");
+      selectClaude(model);
+      model.setLaunchArgs("   ");
+
+      expect(model.getState().submitValue).not.toHaveProperty("extraArgs");
+    });
+
+    it("marks a shared-process provider unsupported and drops its arguments", () => {
+      const model = openAgentProfileForm({ mode: "create" });
+      model.applyProviderCatalog([...ENTRIES, OPENCODE]);
+      model.setName("Shared");
+      model.setProvider("opencode", { label: "OpenCode" });
+      model.setLaunchArgs("--verbose");
+      const state = model.getState();
+
+      expect(state.disclosure.launchArgsSupported).toBe(false);
+      expect(state.submitValue).not.toHaveProperty("extraArgs");
+    });
+  });
+
   describe("provider cascade", () => {
     it("reseeds every provider-scoped selection when the provider changes", () => {
       const model = openWithCatalog({ mode: "create" });

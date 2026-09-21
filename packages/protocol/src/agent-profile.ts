@@ -7,7 +7,8 @@ import { z } from "zod";
  *
  * There is deliberately no system prompt here. `AgentSessionConfig.systemPrompt`
  * is creation-only, so a profile carrying one would apply when starting a new
- * agent and silently do nothing when applied to a running one.
+ * agent and silently do nothing when applied to a running one. `extraArgs` is
+ * creation-only too, but the profile editor says so next to the field.
  */
 export const AgentProfileSchema = z
   .object({
@@ -22,6 +23,8 @@ export const AgentProfileSchema = z
     modeId: z.string().optional(),
     thinkingOptionId: z.string().optional(),
     featureValues: z.record(z.string(), z.unknown()).optional(),
+    /** CLI arguments appended when a new agent's process starts. */
+    extraArgs: z.array(z.string()).optional(),
     /** Free text, surfaced to orchestrating agents by the `list_profiles` MCP tool. */
     notes: z.string().optional(),
   })

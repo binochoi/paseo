@@ -126,6 +126,7 @@ export interface ProviderSnapshotEntry {
   description?: string;
   iconSvg?: string;
   defaultModeId?: string | null;
+  supportsExtraArgs?: boolean;
 }
 
 export interface AgentFeatureToggle {
@@ -524,6 +525,8 @@ export interface AgentSessionConfig {
   providerOptions?: ProviderOptions;
   toolPolicy?: ToolPolicy;
   mcpServers?: Record<string, McpServerConfig>;
+  /** CLI arguments appended when the provider process starts. */
+  extraArgs?: string[];
   /**
    * Internal agents are hidden from listings and don't trigger notifications.
    * They are used for ephemeral system tasks like commit/PR generation.

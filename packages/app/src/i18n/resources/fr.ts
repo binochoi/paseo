@@ -2530,6 +2530,12 @@ export const fr: TranslationResources = {
         notesLabel: "Quand l’utiliser",
         notesPlaceholder:
           "À utiliser pour le travail sur l'UI — composants, mise en page et tokens de design.",
+        launchArgsLabel: "Arguments de lancement",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "Ajoutés à la CLI au démarrage d'un nouvel agent. Non appliqués aux agents en cours.",
+        launchArgsUnsupported:
+          "Ce fournisseur partage un seul processus entre les agents : les arguments de lancement ne sont pas pris en charge.",
         notesHint: "Aide les agents à choisir ce profil lorsqu’ils démarrent un autre agent.",
         save: "Enregistrer",
         saving: "Enregistrement...",

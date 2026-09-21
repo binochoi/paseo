@@ -1492,6 +1492,7 @@ export function readEventIdentifiers(message: SDKMessage): EventIdentifiers {
 export class ClaudeAgentClient implements AgentClient {
   readonly provider = "claude" as const;
   readonly capabilities = CLAUDE_CAPABILITIES;
+  readonly supportsExtraArgs = true;
 
   private readonly defaults?: { agents?: Record<string, AgentDefinition> };
   private readonly logger: Logger;
@@ -3140,6 +3141,7 @@ class ClaudeAgentSession implements AgentSession {
       { prompt: input.iterable, options },
       {
         runtimeSettings: this.runtimeSettings,
+        extraArgs: this.config.extraArgs,
         launchEnv: this.launchEnv,
         queryFactory: this.queryFactory,
         onChildProcess: (child) => {

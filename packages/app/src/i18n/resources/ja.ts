@@ -2491,6 +2491,12 @@ export const ja: TranslationResources = {
         featureCountOne: "{{count}}個の機能",
         notesLabel: "使用する場面",
         notesPlaceholder: "UI作業に使用 — コンポーネント、レイアウト、デザイントークンなど。",
+        launchArgsLabel: "起動引数",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "新しいエージェントを起動するときに CLI に追加されます。実行中のエージェントには適用されません。",
+        launchArgsUnsupported:
+          "このプロバイダーは複数のエージェントで1つのプロセスを共有するため、起動引数に対応していません。",
         notesHint: "別のエージェントを起動するとき、このプロファイルを選ぶために使用されます。",
         save: "保存",
         saving: "保存中...",

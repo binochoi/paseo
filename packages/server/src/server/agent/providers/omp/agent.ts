@@ -442,7 +442,10 @@ function buildResumeStartInput(input: {
     model: input.resumeConfig.model,
     thinkingOptionId: normalizeOmpThinkingOption(input.resumeConfig.thinkingOptionId) ?? undefined,
     ...(input.launchMode.modeId ? { modeId: input.launchMode.modeId } : {}),
-    ...(input.launchMode.extraArgs ? { extraArgs: input.launchMode.extraArgs } : {}),
+    extraArgs: [
+      ...(input.launchMode.extraArgs ?? []),
+      ...(input.resumeConfig.config.extraArgs ?? []),
+    ],
     systemPrompt: composeSystemPromptParts(
       input.resumeConfig.config.systemPrompt,
       input.resumeConfig.config.daemonAppendSystemPrompt,
@@ -2184,6 +2187,7 @@ export class OmpAgentSession implements AgentSession {
 export class OmpAgentClient implements AgentClient {
   readonly provider: AgentProvider = OMP_PROVIDER;
   readonly capabilities: AgentCapabilityFlags = withOmpCapabilities();
+  readonly supportsExtraArgs = true;
 
   private readonly logger: Logger;
   private readonly runtimeSettings?: ProviderRuntimeSettings;
@@ -2242,7 +2246,7 @@ export class OmpAgentClient implements AgentClient {
       thinkingOptionId: normalizeOmpThinkingOption(config.thinkingOptionId) ?? undefined,
       noSession: config.internal === true,
       modeId: launchMode.modeId,
-      extraArgs: launchMode.extraArgs,
+      extraArgs: [...launchMode.extraArgs, ...(config.extraArgs ?? [])],
       systemPrompt: composeSystemPromptParts(config.systemPrompt, config.daemonAppendSystemPrompt),
       env: launchContext?.env,
     });

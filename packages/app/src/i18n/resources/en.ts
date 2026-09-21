@@ -2589,6 +2589,12 @@ export const en = {
         featureCountOne: "{{count}} feature",
         notesLabel: "When to use",
         notesPlaceholder: "Use for UI work — components, layout and design tokens.",
+        launchArgsLabel: "Launch arguments",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "Appended to the CLI when starting a new agent. Not applied to running agents.",
+        launchArgsUnsupported:
+          "This provider shares one process across agents, so launch arguments are not supported.",
         notesHint: "Helps agents choose this profile when starting another agent.",
         save: "Save",
         saving: "Saving...",

@@ -317,6 +317,8 @@ You can also combine profiles with model overrides to pin specific models per pr
 
 Override the command used to launch any provider with the `command` field. This is an array where the first element is the binary and the rest are arguments.
 
+To add arguments for one kind of work instead of the whole host, set **Launch arguments** on an agent profile. They go after the provider's own arguments, only when a new agent starts, and are saved with the agent so resume uses them too. OpenCode runs one shared server for every agent, so its profiles cannot take launch arguments.
+
 ### Override a built-in provider's binary
 
 ```json

@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/select-field";
 import { Switch } from "@/components/ui/switch";
 import { useIsCompactFormFactor } from "@/constants/layout";
+import { useSessionStore } from "@/stores/session-store";
 import { toErrorMessage } from "@/utils/error-messages";
 import { AgentProfileAppearanceField } from "./agent-profile-appearance-field";
+import { supportsLaunchArgs } from "../internal/capabilities";
+import { joinLaunchArgs } from "../internal/launch-args";
 import type {
   AgentProfileFormModel,
   AgentProfileFormOption,
@@ -348,6 +351,15 @@ function OpenAgentProfileEditModal({
           </Field>
         ) : null}
 
+        <AgentProfileLaunchArgsField
+          serverId={serverId}
+          initialArgs={profile?.extraArgs}
+          supported={state.disclosure.launchArgsSupported}
+          disabled={state.isSubmitting}
+          size={controlSize}
+          model={model}
+        />
+
         <Field
           label={t("settings.host.agentProfiles.notesLabel")}
           hint={t("settings.host.agentProfiles.notesHint")}
@@ -397,6 +409,54 @@ function OpenAgentProfileEditModal({
         </View>
       </View>
     </AdaptiveModalSheet>
+  );
+}
+
+/** Hidden on daemons that cannot pass arguments; dimmed on providers that share one process. */
+function AgentProfileLaunchArgsField({
+  serverId,
+  initialArgs,
+  supported,
+  disabled,
+  size,
+  model,
+}: {
+  serverId: string;
+  initialArgs: string[] | undefined;
+  supported: boolean;
+  disabled: boolean;
+  size: FieldControlSize;
+  model: AgentProfileFormModel;
+}): ReactElement | null {
+  const { t } = useTranslation();
+  const visible = useSessionStore((store) =>
+    supportsLaunchArgs(store.sessions[serverId]?.serverInfo?.features),
+  );
+  if (!visible) {
+    return null;
+  }
+  return (
+    <Field
+      label={t("settings.host.agentProfiles.launchArgsLabel")}
+      hint={
+        supported
+          ? t("settings.host.agentProfiles.launchArgsHint")
+          : t("settings.host.agentProfiles.launchArgsUnsupported")
+      }
+      testID="agent-profile-launch-args-field"
+    >
+      <FormTextInput
+        initialValue={joinLaunchArgs(initialArgs ?? [])}
+        onChangeText={model.setLaunchArgs}
+        placeholder={t("settings.host.agentProfiles.launchArgsPlaceholder")}
+        autoCapitalize="none"
+        autoCorrect={false}
+        editable={supported && !disabled}
+        size={size}
+        accessibilityLabel={t("settings.host.agentProfiles.launchArgsLabel")}
+        testID="agent-profile-launch-args-input"
+      />
+    </Field>
   );
 }
 

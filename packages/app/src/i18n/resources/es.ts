@@ -2523,6 +2523,12 @@ export const es: TranslationResources = {
         featureCountOne: "{{count}} característica",
         notesLabel: "Cuándo usarlo",
         notesPlaceholder: "Úselo para trabajo de UI: componentes, diseño y tokens de diseño.",
+        launchArgsLabel: "Argumentos de inicio",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "Se añaden a la CLI al iniciar un agente nuevo. No se aplican a los agentes en ejecución.",
+        launchArgsUnsupported:
+          "Este proveedor comparte un proceso entre agentes, así que no admite argumentos de inicio.",
         notesHint: "Ayuda a los agentes a elegir este perfil al iniciar otro agente.",
         save: "Guardar",
         saving: "Guardando...",

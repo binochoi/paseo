@@ -49,6 +49,8 @@ type DraftComposerState = UseAgentFormStateResult & {
   effectiveModelId: string;
   effectiveThinkingOptionId: string;
   featureValues: Record<string, unknown> | undefined;
+  /** From the last applied profile, while its provider is still selected. */
+  extraArgs: string[] | undefined;
   agentControls: DraftAgentControlsProps;
   commandDraftConfig: DraftCommandConfig | undefined;
 };
@@ -279,10 +281,20 @@ export function useAgentInputDraft(input: UseAgentInputDraftInput): AgentInputDr
     initialFeatureValues: composerOptions?.initialFeatureValues,
   });
 
+  // Arguments are written for one CLI, so they drop once another provider is picked.
+  const [profileArgs, setProfileArgs] = useState<{ provider: string; args: string[] } | null>(null);
+  const extraArgs =
+    profileArgs &&
+    profileArgs.provider === formState.selectedProvider &&
+    profileArgs.args.length > 0
+      ? profileArgs.args
+      : undefined;
+
   const applyDraftAgentProfile = useCallback(
     (profile: Parameters<typeof formState.applyProfileFromUser>[0]) => {
       formState.applyProfileFromUser(profile);
       applyProfileFeatureValues(profile.featureValues);
+      setProfileArgs({ provider: profile.provider, args: profile.extraArgs });
     },
     [applyProfileFeatureValues, formState],
   );
@@ -319,6 +331,7 @@ export function useAgentInputDraft(input: UseAgentInputDraftInput): AgentInputDr
       effectiveModelId,
       effectiveThinkingOptionId,
       featureValues: draftFeatureValues,
+      extraArgs,
       agentControls: buildDraftAgentControls({
         formState,
         features: draftFeatures,
@@ -334,6 +347,7 @@ export function useAgentInputDraft(input: UseAgentInputDraftInput): AgentInputDr
     effectiveThinkingOptionId,
     draftFeatures,
     draftFeatureValues,
+    extraArgs,
     applyDraftAgentProfile,
     formState,
     setDraftFeatureValue,

@@ -867,6 +867,7 @@ function isACPCreateConfigUnattended(input: AgentCreateConfigUnattendedInput): b
 export class ACPAgentClient implements AgentClient {
   readonly provider: string;
   readonly capabilities: AgentCapabilityFlags;
+  readonly supportsExtraArgs = true;
   readonly resolveCreateConfig = resolveACPCreateConfig;
   readonly isCreateConfigUnattended = isACPCreateConfigUnattended;
 
@@ -2708,7 +2709,11 @@ export class ACPAgentSession implements AgentSession, ACPClient {
     }
 
     const command = prefix.command;
-    const args = [...prefix.args, ...this.defaultCommand.slice(1)];
+    const args = [
+      ...prefix.args,
+      ...this.defaultCommand.slice(1),
+      ...(this.config.extraArgs ?? []),
+    ];
     const child = spawnProcess(command, args, {
       cwd: this.config.cwd,
       ...createProviderEnvSpec({

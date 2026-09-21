@@ -791,6 +791,7 @@ interface WorkspaceDraftSubmissionConfig {
   model: string | null;
   thinkingOptionId: string | null;
   featureValues: Record<string, unknown> | undefined;
+  extraArgs?: string[];
   target: WorkspaceTabTarget;
 }
 
@@ -974,6 +975,7 @@ async function createWorkspaceChatAgent(input: CreateChatAgentInput): Promise<Su
       model: composerState.effectiveModelId || undefined,
       thinkingOptionId: composerState.effectiveThinkingOptionId || undefined,
       featureValues: composerState.featureValues,
+      ...(composerState.extraArgs ? { extraArgs: composerState.extraArgs } : {}),
     },
     initialPrompt: text,
     clientMessageId: `${input.draftId}:initial-message`,
@@ -1097,6 +1099,7 @@ function resolveWorkspaceDraftSubmissionConfig(input: {
     model: composerState.effectiveModelId || null,
     thinkingOptionId: composerState.effectiveThinkingOptionId || null,
     featureValues: composerState.featureValues,
+    ...(composerState.extraArgs ? { extraArgs: composerState.extraArgs } : {}),
     target: { kind: "draft", draftId },
   };
 }
@@ -1155,6 +1158,7 @@ function submitWorkspaceDraft(input: SubmitDraftInput): SubmitOutcome {
     ...(submission.model ? { model: submission.model } : {}),
     ...(submission.thinkingOptionId ? { thinkingOptionId: submission.thinkingOptionId } : {}),
     ...(submission.featureValues ? { featureValues: submission.featureValues } : {}),
+    ...(submission.extraArgs ? { extraArgs: submission.extraArgs } : {}),
     allowEmptyText: true,
     agentCreation: input.agentCreation,
   });

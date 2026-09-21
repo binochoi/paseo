@@ -184,6 +184,7 @@ function buildStoredAgentConfig(record: StoredAgentRecord): AgentSessionConfig {
     config.systemPrompt = record.config.systemPrompt;
   }
   if (record.config.mcpServers != null) config.mcpServers = record.config.mcpServers;
+  if (record.config.extraArgs != null) config.extraArgs = record.config.extraArgs;
   return stripInternalPaseoMcpServer(config);
 }
 

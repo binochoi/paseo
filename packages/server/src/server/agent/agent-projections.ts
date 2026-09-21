@@ -325,6 +325,9 @@ function buildSerializableConfig(config: AgentSessionConfig): SerializableAgentC
   if (config.mcpServers) {
     serializable.mcpServers = config.mcpServers;
   }
+  if (config.extraArgs?.length) {
+    serializable.extraArgs = [...config.extraArgs];
+  }
   return Object.keys(serializable).length ? serializable : null;
 }
 

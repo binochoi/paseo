@@ -841,6 +841,7 @@ export class ProviderSnapshotManager {
           description: definition.description,
           iconSvg: definition.iconSvg,
           defaultModeId: definition.defaultModeId ?? null,
+          supportsExtraArgs: definition.supportsExtraArgs,
         }),
       });
     }

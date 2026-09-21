@@ -826,6 +826,7 @@ function createPluginProviderDefinition(
     derivedFromProviderId: null,
     optionsSchema: PluginProviderOptionsSchema,
     supportsExactMcpPreapproval: true,
+    supportsExtraArgs: false,
     validateOptions: (options) =>
       options === undefined ? undefined : PluginProviderOptionsSchema.parse(options),
     applyOptions: (config, options) => ({ ...config, providerOptions: options }),

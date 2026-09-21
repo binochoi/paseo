@@ -2506,6 +2506,12 @@ export const ptBR: TranslationResources = {
         featureCountOne: "{{count}} recurso",
         notesLabel: "Quando usar",
         notesPlaceholder: "Use para trabalho de UI — componentes, layout e tokens de design.",
+        launchArgsLabel: "Argumentos de inicialização",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "Adicionados à CLI ao iniciar um novo agente. Não se aplicam a agentes em execução.",
+        launchArgsUnsupported:
+          "Este provedor compartilha um processo entre agentes, então não aceita argumentos de inicialização.",
         notesHint: "Ajuda os agentes a escolher este perfil ao iniciar outro agente.",
         save: "Salvar",
         saving: "Salvando...",

@@ -82,6 +82,7 @@ export interface ProviderDefinition extends AgentProviderDefinition {
   derivedFromProviderId: string | null;
   optionsSchema: z.ZodType<ProviderOptions>;
   supportsExactMcpPreapproval: boolean;
+  supportsExtraArgs: boolean;
   validateOptions: (options: ProviderOptions | undefined) => ProviderOptions | undefined;
   applyOptions: (
     config: AgentSessionConfig,
@@ -619,6 +620,7 @@ function createRegistryEntry(
     derivedFromProviderId: resolved.derivedFromProviderId,
     optionsSchema: resolved.contract.optionsSchema,
     supportsExactMcpPreapproval: resolved.contract.supportsExactMcpPreapproval,
+    supportsExtraArgs: modelClient.supportsExtraArgs === true,
     validateOptions: (options) =>
       validateProviderOptions(provider, resolved.contract.optionsSchema, options),
     applyOptions: (config, options) => ({ ...config, providerOptions: options }),

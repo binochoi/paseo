@@ -127,6 +127,7 @@ export interface ProviderSnapshotEntry {
   description?: string;
   iconSvg?: string;
   defaultModeId?: string | null;
+  supportsExtraArgs?: boolean;
 }
 
 export interface AgentCreateConfigParent {
@@ -618,6 +619,8 @@ export interface AgentSessionConfig {
   providerOptions?: ProviderOptions;
   toolPolicy?: ToolPolicy;
   mcpServers?: Record<string, McpServerConfig>;
+  /** CLI arguments appended when the provider process starts. */
+  extraArgs?: string[];
   /**
    * Internal agents are hidden from listings and don't trigger notifications.
    * They are used for ephemeral system tasks like commit/PR generation.
@@ -737,6 +740,8 @@ export interface ResolveAgentDefaultModeInput {
 export interface AgentClient {
   readonly provider: AgentProvider;
   readonly capabilities: AgentCapabilityFlags;
+  /** True when each session starts its own process, so `config.extraArgs` reaches it. */
+  readonly supportsExtraArgs?: boolean;
   createSession(
     config: AgentSessionConfig,
     launchContext?: AgentLaunchContext,

@@ -525,6 +525,7 @@ function buildResumeStartInput(input: {
     thinkingOptionId: normalizePiThinkingOption(input.resumeConfig.thinkingOptionId) ?? undefined,
     mcpConfigPath: input.mcpConfig?.path,
     extensionPaths: input.paseoExtension ? [input.paseoExtension.path] : undefined,
+    extraArgs: input.resumeConfig.config.extraArgs,
   };
 }
 
@@ -2506,6 +2507,7 @@ export class PiRpcAgentSession implements AgentSession {
 export class PiRpcAgentClient implements AgentClient {
   readonly provider: AgentProvider;
   readonly capabilities: AgentCapabilityFlags;
+  readonly supportsExtraArgs = true;
 
   private readonly logger: Logger;
   private readonly runtimeSettings?: ProviderRuntimeSettings;
@@ -2548,6 +2550,7 @@ export class PiRpcAgentClient implements AgentClient {
         env: launchContext?.env,
         mcpConfigPath: mcpConfig?.path,
         extensionPaths: paseoExtension ? [paseoExtension.path] : undefined,
+        extraArgs: config.extraArgs,
       });
     } catch (error) {
       mcpConfig?.cleanup();

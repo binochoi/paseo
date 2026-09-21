@@ -9,6 +9,7 @@ import type { AgentProfile } from "@getpaseo/protocol/messages";
 import { formatAgentModeLabel, formatThinkingOptionLabel } from "@/agent-controls/labels";
 import { applyFeatureValues, pruneFeatureValues } from "@/hooks/feature-preferences";
 import { filterSelectableModels } from "@/provider-selection/model-catalog";
+import { joinLaunchArgs, splitLaunchArgs } from "./launch-args";
 
 /**
  * The persisted profile minus the id; the list owns identity.
@@ -74,6 +75,8 @@ export interface AgentProfileFormDisclosure {
   showModeField: boolean;
   showThinkingField: boolean;
   showFeaturesField: boolean;
+  /** False when the provider shares one process across agents, so arguments cannot reach it. */
+  launchArgsSupported: boolean;
 }
 
 export interface AgentProfileFormState {
@@ -82,6 +85,8 @@ export interface AgentProfileFormState {
   icon: string;
   color: string;
   notes: string;
+  /** One line of text; split into `extraArgs` on submit. */
+  launchArgs: string;
   provider: string;
   modelId: string;
   modeId: string;
@@ -124,6 +129,7 @@ export interface AgentProfileFormModel {
   setName: (value: string) => void;
   setAppearance: (value: { icon: string; color: string }) => void;
   setNotes: (value: string) => void;
+  setLaunchArgs: (value: string) => void;
   setProvider: (providerId: string, display: AgentProfileFormDisplay) => void;
   setModel: (modelId: string, display: AgentProfileFormDisplay | null) => void;
   setMode: (modeId: string, display: AgentProfileFormDisplay | null) => void;
@@ -342,6 +348,7 @@ function buildSubmitValue(state: AgentProfileFormState): AgentProfileValue | nul
   if (!name || !state.provider) {
     return null;
   }
+  const extraArgs = state.disclosure.launchArgsSupported ? splitLaunchArgs(state.launchArgs) : [];
   return {
     name,
     ...(state.icon ? { icon: state.icon } : {}),
@@ -351,6 +358,7 @@ function buildSubmitValue(state: AgentProfileFormState): AgentProfileValue | nul
     ...(state.modeId ? { modeId: state.modeId } : {}),
     ...(state.thinkingOptionId ? { thinkingOptionId: state.thinkingOptionId } : {}),
     ...(Object.keys(state.featureValues).length > 0 ? { featureValues: state.featureValues } : {}),
+    ...(extraArgs.length > 0 ? { extraArgs } : {}),
     ...(notes ? { notes } : {}),
   };
 }
@@ -388,6 +396,7 @@ function buildInitialState(snapshot: AgentProfileFormSnapshot): AgentProfileForm
     icon: profile.icon ?? "",
     color: profile.color ?? "",
     notes: profile.notes ?? "",
+    launchArgs: joinLaunchArgs(profile.extraArgs ?? []),
     provider,
     modelId,
     modeId: profile.modeId ?? "",
@@ -411,6 +420,7 @@ function buildInitialState(snapshot: AgentProfileFormSnapshot): AgentProfileForm
       showModeField: false,
       showThinkingField: false,
       showFeaturesField: false,
+      launchArgsSupported: true,
     },
     isSubmitting: false,
     submitError: null,
@@ -493,6 +503,8 @@ export function openAgentProfileForm(snapshot: AgentProfileFormSnapshot): AgentP
       showThinkingField:
         hasProvider && (thinking.length > 0 || Boolean(withOptions.thinkingOptionId)),
       showFeaturesField: hasProvider && features.length > 0,
+      // Unknown until the catalog lands; assume yes so the field does not flicker.
+      launchArgsSupported: findEntry(entries, withOptions.provider)?.supportsExtraArgs !== false,
     };
     const canSubmit =
       withOptions.name.trim().length > 0 &&
@@ -554,6 +566,7 @@ export function openAgentProfileForm(snapshot: AgentProfileFormSnapshot): AgentP
     setAppearance: (value) =>
       publish((current) => ({ ...current, icon: value.icon, color: value.color })),
     setNotes: (value) => publish((current) => ({ ...current, notes: value })),
+    setLaunchArgs: (value) => publish((current) => ({ ...current, launchArgs: value })),
     setProvider: (providerId, display) =>
       publish((current) => {
         if (current.provider === providerId) {

@@ -69,6 +69,7 @@ interface AutoSubmitConfig {
   model: string | null;
   thinkingOptionId: string | null;
   featureValues: Record<string, unknown>;
+  extraArgs?: string[];
 }
 
 function resolveAutoSubmitConfig(
@@ -78,6 +79,7 @@ function resolveAutoSubmitConfig(
     model?: string | null;
     thinkingOptionId?: string | null;
     featureValues?: Record<string, unknown>;
+    extraArgs?: string[];
   } | null,
 ): AutoSubmitConfig | null {
   if (!pending) return null;
@@ -87,6 +89,7 @@ function resolveAutoSubmitConfig(
     model: pending.model ?? null,
     thinkingOptionId: pending.thinkingOptionId ?? null,
     featureValues: pending.featureValues ?? {},
+    ...(pending.extraArgs ? { extraArgs: pending.extraArgs } : {}),
   };
 }
 
@@ -152,6 +155,7 @@ async function submitDraftCreateRequest(input: {
     effectiveModelId: string | null;
     effectiveThinkingOptionId: string | null;
     featureValues: Record<string, unknown> | undefined;
+    extraArgs?: string[];
   };
   hostDisconnectedMessage: string;
   selectModelMessage: string;
@@ -192,6 +196,7 @@ async function submitDraftCreateRequest(input: {
     thinkingOptionId:
       autoSubmitConfig?.thinkingOptionId ?? (composerState.effectiveThinkingOptionId || undefined),
     featureValues: autoSubmitConfig?.featureValues ?? composerState.featureValues,
+    extraArgs: autoSubmitConfig ? autoSubmitConfig.extraArgs : composerState.extraArgs,
   });
 
   const attachmentsArray = Array.isArray(attachments) ? attachments : undefined;

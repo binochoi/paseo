@@ -102,4 +102,53 @@ describe("Claude spawn override", () => {
     const spawnOptions = claudeSpawnCall?.[2];
     expect(spawnOptions?.shell).toBe(false);
   });
+
+  test("appends profile arguments after the provider's own", async () => {
+    let capturedOptions: Options | undefined;
+    const queryFactory = vi.fn(({ options }: ClaudeQueryInput) => {
+      capturedOptions = options;
+      return createQueryMock([
+        { type: "system", subtype: "init", session_id: "extra-args", model: "opus" },
+        {
+          type: "result",
+          subtype: "success",
+          usage: { input_tokens: 1, cache_read_input_tokens: 0, output_tokens: 1 },
+          total_cost_usd: 0,
+        },
+      ]);
+    });
+    const spawnSpy = vi.spyOn(spawnUtils, "spawnProcess").mockReturnValue(createChildProcessStub());
+    const client = new ClaudeAgentClient({
+      logger: createTestLogger(),
+      queryFactory,
+      runtimeSettings: { command: { mode: "append", args: ["--provider-flag"] } },
+      resolveBinary: async () => "/test/claude/bin",
+    });
+    const session = await client.createSession({
+      provider: "claude",
+      cwd: process.cwd(),
+      extraArgs: ["--no-project-config"],
+    });
+
+    try {
+      await session.run("extra args");
+      capturedOptions?.spawnClaudeCodeProcess?.({
+        command: "/test/claude/bin",
+        args: ["--output-format", "stream-json"],
+        cwd: process.cwd(),
+        env: {},
+        signal: new AbortController().signal,
+      } satisfies ClaudeSpawnOptions);
+    } finally {
+      await session.close();
+    }
+
+    const call = spawnSpy.mock.calls.find(([command]) => command === "/test/claude/bin");
+    expect(call?.[1]).toEqual([
+      "--output-format",
+      "stream-json",
+      "--provider-flag",
+      "--no-project-config",
+    ]);
+  });
 });

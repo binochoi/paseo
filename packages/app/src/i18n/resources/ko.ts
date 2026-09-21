@@ -2478,6 +2478,12 @@ export const ko: TranslationResources = {
         featureCountOne: "기능 {{count}}개",
         notesLabel: "사용 시점",
         notesPlaceholder: "UI 작업에 사용 — 컴포넌트, 레이아웃, 디자인 토큰.",
+        launchArgsLabel: "실행 인자",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "새 에이전트를 시작할 때 CLI에 덧붙입니다. 실행 중인 에이전트에는 적용되지 않습니다.",
+        launchArgsUnsupported:
+          "이 프로바이더는 여러 에이전트가 프로세스 하나를 함께 써서 실행 인자를 지원하지 않습니다.",
         notesHint: "에이전트가 다른 에이전트를 시작할 때 이 프로필을 선택하는 데 사용됩니다.",
         save: "저장",
         saving: "저장하는 중...",

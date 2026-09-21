@@ -2513,6 +2513,12 @@ export const ru: TranslationResources = {
         featureCountOne: "{{count}} функция",
         notesLabel: "Когда использовать",
         notesPlaceholder: "Используйте для работы над UI — компоненты, макет и токены дизайна.",
+        launchArgsLabel: "Аргументы запуска",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint:
+          "Добавляются к CLI при запуске нового агента. Не применяются к работающим агентам.",
+        launchArgsUnsupported:
+          "Этот провайдер использует один процесс для всех агентов, поэтому аргументы запуска не поддерживаются.",
         notesHint: "Помогает агентам выбрать этот профиль при запуске другого агента.",
         save: "Сохранить",
         saving: "Сохранение...",

@@ -2466,6 +2466,11 @@ export const ar: TranslationResources = {
         featureCountOne: "{{count}} سمة",
         notesLabel: "متى يُستخدم",
         notesPlaceholder: "استخدمه لعمل الواجهة — المكونات والتخطيط ورموز التصميم.",
+        launchArgsLabel: "وسيطات التشغيل",
+        launchArgsPlaceholder: "--no-project-config",
+        launchArgsHint: "تُضاف إلى CLI عند بدء وكيل جديد. لا تُطبَّق على الوكلاء قيد التشغيل.",
+        launchArgsUnsupported:
+          "يشارك هذا المزوّد عملية واحدة بين الوكلاء، لذا لا يدعم وسيطات التشغيل.",
         notesHint: "يساعد الوكلاء على اختيار ملف التعريف هذا عند بدء وكيل آخر.",
         save: "حفظ",
         saving: "جارٍ الحفظ...",

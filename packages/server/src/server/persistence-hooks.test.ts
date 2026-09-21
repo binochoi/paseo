@@ -49,6 +49,7 @@ describe("persistence hooks", () => {
             args: ["/tmp/bridge.mjs", "--socket", "/tmp/agent.sock"],
           },
         },
+        extraArgs: ["--no-project-config"],
       },
     });
 
@@ -72,6 +73,7 @@ describe("persistence hooks", () => {
           args: ["/tmp/bridge.mjs", "--socket", "/tmp/agent.sock"],
         },
       },
+      extraArgs: ["--no-project-config"],
     });
   });
 

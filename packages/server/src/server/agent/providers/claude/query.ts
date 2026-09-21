@@ -19,6 +19,8 @@ export type ClaudeQueryFactory = (input: ClaudeQueryInput) => Query;
 
 export interface ClaudeQueryContext {
   runtimeSettings?: ProviderRuntimeSettings;
+  /** Appended after every other argument, from the agent's own config. */
+  extraArgs?: string[];
   launchEnv?: Record<string, string>;
   queryFactory?: ClaudeQueryFactory;
   /** Called with the spawned child process so the caller can tree-kill it on close. */
@@ -32,25 +34,26 @@ function isChildProcessWithStreams(child: ChildProcess): child is ChildProcessWi
 function resolveClaudeSpawnCommand(
   spawnOptions: SpawnOptions,
   runtimeSettings?: ProviderRuntimeSettings,
+  extraArgs: string[] = [],
 ): { command: string; args: string[] } {
   const commandConfig = runtimeSettings?.command;
   if (!commandConfig || commandConfig.mode === "default") {
     return {
       command: spawnOptions.command,
-      args: [...spawnOptions.args],
+      args: [...spawnOptions.args, ...extraArgs],
     };
   }
 
   if (commandConfig.mode === "append") {
     return {
       command: spawnOptions.command,
-      args: [...spawnOptions.args, ...(commandConfig.args ?? [])],
+      args: [...spawnOptions.args, ...(commandConfig.args ?? []), ...extraArgs],
     };
   }
 
   return {
     command: commandConfig.argv[0],
-    args: [...commandConfig.argv.slice(1), ...spawnOptions.args],
+    args: [...commandConfig.argv.slice(1), ...spawnOptions.args, ...extraArgs],
   };
 }
 
@@ -58,11 +61,11 @@ function applyRuntimeSettingsToClaudeOptions(
   options: ClaudeOptions,
   context: ClaudeQueryContext,
 ): ClaudeOptions {
-  const { runtimeSettings, launchEnv, onChildProcess } = context;
+  const { runtimeSettings, extraArgs, launchEnv, onChildProcess } = context;
   return {
     ...options,
     spawnClaudeCodeProcess: (spawnOptions) => {
-      const resolved = resolveClaudeSpawnCommand(spawnOptions, runtimeSettings);
+      const resolved = resolveClaudeSpawnCommand(spawnOptions, runtimeSettings, extraArgs);
       // When the SDK passes a default JS runtime ("node"/"bun"), replace it with
       // process.execPath — the actual node binary running the daemon. This avoids
       // PATH lookup failures in the managed runtime bundle.

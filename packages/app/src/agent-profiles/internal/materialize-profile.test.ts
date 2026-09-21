@@ -32,6 +32,7 @@ describe("materializeAgentProfile", () => {
       modeId: "plan",
       thinkingOptionId: "think-hard",
       featureValues: { web_search: true },
+      extraArgs: [],
     });
   });
 
@@ -42,6 +43,7 @@ describe("materializeAgentProfile", () => {
       modeId: "",
       thinkingOptionId: "",
       featureValues: {},
+      extraArgs: [],
     });
   });
 
@@ -77,6 +79,12 @@ describe("toAgentConfigApply", () => {
     expect(toAgentConfigApply(materializeAgentProfile(profile({ modeId: "plan" })))).toEqual({
       modeId: "plan",
     });
+  });
+
+  it("never sends launch arguments to a running agent", () => {
+    expect(
+      toAgentConfigApply(materializeAgentProfile(profile({ extraArgs: ["--no-project-config"] }))),
+    ).toEqual({});
   });
 
   it("omits an empty feature map so the agent keeps its own feature values", () => {
