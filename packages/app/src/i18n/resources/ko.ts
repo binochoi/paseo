@@ -2261,6 +2261,7 @@ export const ko: TranslationResources = {
         toggleFocusMode: "집중 모드 토글",
         cycleTheme: "테마 순환",
         focusMessageInput: "메시지 입력란에 포커스",
+        openModelSelector: "모델 선택 창 열기",
         cycleAgentMode: "에이전트 모드 전환",
         toggleVoiceMode: "음성 모드 토글",
         startStopDictation: "받아쓰기 시작/중지",

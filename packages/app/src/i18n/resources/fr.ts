@@ -2308,6 +2308,7 @@ export const fr: TranslationResources = {
         toggleFocusMode: "Basculer le mode de mise au point",
         cycleTheme: "Thème du cycle",
         focusMessageInput: "Saisie du message de focus",
+        openModelSelector: "Open model selector",
         cycleAgentMode: "Parcourir les modes de l'agent",
         toggleVoiceMode: "Changer le mode vocal",
         startStopDictation: "Démarrer la dictée/stop",

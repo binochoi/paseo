@@ -195,6 +195,7 @@ export const SHORTCUT_HELP_ROW_ORDER: Record<ShortcutSectionId, readonly string[
   layout: ["toggle-left-sidebar", "toggle-right-sidebar", "toggle-both-sidebars", "toggle-focus"],
   "agent-input": [
     "focus-message-input",
+    "open-model-selector",
     "cycle-agent-mode",
     "voice-toggle",
     "dictation-toggle",
@@ -242,6 +243,7 @@ const SHORTCUT_HELP_LABEL_KEYS: Record<string, string> = {
   "toggle-focus": "settings.shortcuts.help.toggleFocusMode",
   "cycle-theme": "settings.shortcuts.help.cycleTheme",
   "focus-message-input": "settings.shortcuts.help.focusMessageInput",
+  "open-model-selector": "settings.shortcuts.help.openModelSelector",
   "cycle-agent-mode": "settings.shortcuts.help.cycleAgentMode",
   "voice-toggle": "settings.shortcuts.help.toggleVoiceMode",
   "dictation-toggle": "settings.shortcuts.help.startStopDictation",
@@ -1070,6 +1072,17 @@ const SHORTCUT_BINDINGS: readonly ShortcutBinding[] = [
       id: "focus-message-input",
       section: "agent-input",
       label: "Focus message input",
+    },
+  },
+  {
+    id: "agent-model-select",
+    action: "agent.model.select",
+    combo: "",
+    when: { commandCenter: false },
+    help: {
+      id: "open-model-selector",
+      section: "agent-input",
+      label: "Open model selector",
     },
   },
   {

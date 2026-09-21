@@ -2370,6 +2370,7 @@ export const en = {
         toggleFocusMode: "Toggle focus mode",
         cycleTheme: "Cycle theme",
         focusMessageInput: "Focus message input",
+        openModelSelector: "Open model selector",
         cycleAgentMode: "Cycle agent mode",
         toggleVoiceMode: "Toggle voice mode",
         startStopDictation: "Start/stop dictation",

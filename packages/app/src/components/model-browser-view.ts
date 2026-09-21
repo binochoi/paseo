@@ -1,6 +1,7 @@
 import {
   filterAndRankModelRows,
   getAllProviderModelRows,
+  getProviderModelRows,
   type ProviderSelectionModelRow,
   type ProviderSelectorProvider,
 } from "@/provider-selection/provider-selection";
@@ -73,6 +74,38 @@ export function resolveModelBrowserAllView({
     return { kind: "noSearchMatches" };
   }
   return { kind: "searchResults", rows };
+}
+
+/**
+ * 현재 브라우저 상태에서 보이는 모델 행의 flat 목록을 반환한다.
+ * 프로바이더 드릴다운 목록만 보이는 경우(검색 없는 전체 보기)에는 null을 반환한다.
+ */
+export function resolveVisibleModelRows({
+  view,
+  providers,
+  searchQuery,
+  isSearchFocused,
+  searchAllOnFocus = false,
+}: {
+  view: ModelBrowserView;
+  providers: ProviderSelectorProvider[];
+  searchQuery: string;
+  isSearchFocused: boolean;
+  searchAllOnFocus?: boolean;
+}): ProviderSelectionModelRow[] | null {
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  if (view.kind === "provider") {
+    const provider = providers.find((p) => p.id === view.providerId) ?? null;
+    if (!provider) return null;
+    return filterAndRankModelRows(getProviderModelRows(provider), normalizedQuery);
+  }
+  const allView = resolveModelBrowserAllView({
+    providers,
+    normalizedQuery,
+    isSearchFocused: searchAllOnFocus && isSearchFocused,
+  });
+  if (allView.kind === "searchResults") return allView.rows;
+  return null;
 }
 
 /** Where the picker lands when it opens. A sole provider skips the redundant root view. */

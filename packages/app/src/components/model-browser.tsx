@@ -193,6 +193,8 @@ interface ModelBrowserProps {
   rootBrowseContent?: React.ReactNode;
   /** Hide the pinned Profiles section while still using rows for model matching. */
   showProfilesSection?: boolean;
+  /** 키보드로 포커스된 모델 행의 key (row.favoriteKey) */
+  focusedModelKey?: string | null;
 }
 
 interface ModelBrowserContentProps extends Omit<ModelBrowserProps, "state" | "scrolling"> {
@@ -208,6 +210,7 @@ interface ModelBrowserContentProps extends Omit<ModelBrowserProps, "state" | "sc
   scrolling: "sheet" | "independent";
   searchAllOnFocus: boolean;
   rootBrowseContent?: React.ReactNode;
+  focusedModelKey?: string | null;
 }
 
 type ProviderGlyphTone = "muted" | "foreground";
@@ -667,6 +670,7 @@ function ModelRow({
   row,
   serverId,
   isSelected,
+  isFocused,
   showProviderLabel = false,
   onPress,
   profiledRows,
@@ -677,6 +681,7 @@ function ModelRow({
   row: ProviderSelectionModelRow;
   serverId: string | null;
   isSelected: boolean;
+  isFocused?: boolean;
   showProviderLabel?: boolean;
   onPress: () => void;
   profiledRows: AgentProfilePickerRowModel[];
@@ -779,10 +784,10 @@ function ModelRow({
     ({ hovered, pressed }: PressableStateCallbackType & { hovered?: boolean }) => [
       styles.browserRow,
       styles.browserModelRow,
-      Boolean(hovered) && styles.browserRowHovered,
+      (Boolean(hovered) || isFocused) && styles.browserRowHovered,
       pressed && styles.browserRowPressed,
     ],
-    [],
+    [isFocused],
   );
 
   return (
@@ -827,6 +832,7 @@ function SelectableModelRow({
   row,
   serverId,
   isSelected,
+  isFocused,
   showProviderLabel,
   onSelect,
   profiledRows,
@@ -837,6 +843,7 @@ function SelectableModelRow({
   row: ProviderSelectionModelRow;
   serverId: string | null;
   isSelected: boolean;
+  isFocused?: boolean;
   showProviderLabel?: boolean;
   onSelect: (provider: string, modelId: string) => void;
   profiledRows: AgentProfilePickerRowModel[];
@@ -852,6 +859,7 @@ function SelectableModelRow({
       row={row}
       serverId={serverId}
       isSelected={isSelected}
+      isFocused={isFocused}
       showProviderLabel={showProviderLabel}
       onPress={handlePress}
       profiledRows={profiledRows}
@@ -1144,6 +1152,7 @@ function ModelRowList({
   onCreateProfile,
   onEditProfile,
   onEditProfiles,
+  focusedModelKey,
 }: {
   rows: ProviderSelectionModelRow[];
   serverId: string | null;
@@ -1157,6 +1166,7 @@ function ModelRowList({
   onCreateProfile?: (seed: AgentProfileSeed) => void;
   onEditProfile?: (profileId: string) => void;
   onEditProfiles?: () => void;
+  focusedModelKey?: string | null;
 }) {
   const isCompact = useIsCompactFormFactor();
   const renderItem = useCallback(
@@ -1165,6 +1175,7 @@ function ModelRowList({
         row={item}
         serverId={serverId}
         isSelected={item.provider === selectedProvider && item.modelId === selectedModel}
+        isFocused={focusedModelKey === item.favoriteKey}
         showProviderLabel={showProviderLabel}
         onSelect={onSelect}
         profiledRows={profiledLookup.get(`${item.provider}:${item.modelId}`) ?? []}
@@ -1174,6 +1185,7 @@ function ModelRowList({
       />
     ),
     [
+      focusedModelKey,
       onEditProfile,
       onEditProfiles,
       onCreateProfile,
@@ -1272,6 +1284,7 @@ function ProviderModelBrowserContent({
   onRetryProvider,
   isRetryingProvider,
   scrolling,
+  focusedModelKey,
 }: {
   serverId: string | null;
   view: Extract<ModelBrowserView, { kind: "provider" }>;
@@ -1290,6 +1303,7 @@ function ProviderModelBrowserContent({
   onRetryProvider?: (provider: AgentProvider) => void;
   isRetryingProvider: boolean;
   scrolling: "sheet" | "independent";
+  focusedModelKey?: string | null;
 }) {
   const { t } = useTranslation();
   const visibleRows = useMemo(
@@ -1357,6 +1371,7 @@ function ProviderModelBrowserContent({
       onCreateProfile={onCreateProfile}
       onEditProfile={onEditProfile}
       onEditProfiles={onEditProfiles}
+      focusedModelKey={focusedModelKey}
     />
   );
 }
@@ -1382,6 +1397,7 @@ function ModelBrowserContent({
   searchAllOnFocus,
   rootBrowseContent,
   showProfilesSection = true,
+  focusedModelKey,
 }: ModelBrowserContentProps) {
   const { t } = useTranslation();
   const normalizedQuery = useMemo(() => normalizeSearchQuery(searchQuery), [searchQuery]);
@@ -1427,6 +1443,7 @@ function ModelBrowserContent({
         onRetryProvider={onRetryProvider}
         isRetryingProvider={isRetryingProvider}
         scrolling={scrolling}
+        focusedModelKey={focusedModelKey}
       />
     );
   }
@@ -1456,6 +1473,7 @@ function ModelBrowserContent({
         onCreateProfile={onCreateProfile}
         onEditProfile={onEditProfile}
         onEditProfiles={onEditProfiles}
+        focusedModelKey={focusedModelKey}
       />
     );
   }
@@ -1520,6 +1538,7 @@ export function ModelBrowser({
   searchAllOnFocus = false,
   rootBrowseContent,
   showProfilesSection,
+  focusedModelKey,
 }: ModelBrowserProps) {
   return (
     <ModelBrowserContent
@@ -1543,6 +1562,7 @@ export function ModelBrowser({
       searchAllOnFocus={searchAllOnFocus}
       rootBrowseContent={rootBrowseContent}
       showProfilesSection={showProfilesSection}
+      focusedModelKey={focusedModelKey}
     />
   );
 }

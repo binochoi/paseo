@@ -2305,6 +2305,7 @@ export const es: TranslationResources = {
         toggleFocusMode: "Alternar modo de enfoque",
         cycleTheme: "Tema del ciclo",
         focusMessageInput: "Entrada de mensaje de enfoque",
+        openModelSelector: "Open model selector",
         cycleAgentMode: "Alternar modo del agente",
         toggleVoiceMode: "Alternar modo de voz",
         startStopDictation: "Iniciar dictado/stop",

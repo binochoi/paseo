@@ -8,11 +8,15 @@ import { ComboboxTrigger } from "@/components/ui/combobox-trigger";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Combobox, type ComboboxOption, type ComboboxProps } from "@/components/ui/combobox";
 import { ModelBrowser, ModelProviderGlyph, useModelBrowser } from "@/components/model-browser";
-import { resolveModelBrowserScrolling } from "@/components/model-browser-view";
+import {
+  resolveModelBrowserScrolling,
+  resolveVisibleModelRows,
+} from "@/components/model-browser-view";
 import { useIsCompactFormFactor } from "@/constants/layout";
 import { isNative, isWeb } from "@/constants/platform";
 import type { ProviderSelectorProvider } from "@/provider-selection/provider-selection";
 import { ICON_SIZE, type Theme } from "@/styles/theme";
+import { useKeyboardActionHandler } from "@/hooks/use-keyboard-action-handler";
 
 const EMPTY_COMBOBOX_OPTIONS: ComboboxOption[] = [];
 const ThemedLoadingSpinner = withUnistyles(LoadingSpinner);
@@ -94,6 +98,10 @@ export function CombinedModelSelector({
   const anchorRef = useRef<View>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isContentReady, setIsContentReady] = useState(isWeb);
+  const [focusedModelKey, setFocusedModelKey] = useState<string | null>(null);
+  const keyboardHandlerIdRef = useRef(
+    `combined-model-selector:${Math.random().toString(36).slice(2)}`,
+  );
   const browser = useModelBrowser({
     providers,
     selectedProvider,
@@ -112,6 +120,7 @@ export function CombinedModelSelector({
         onOpen?.();
         return;
       }
+      setFocusedModelKey(null);
       reset();
       onClose?.();
     },
@@ -141,6 +150,68 @@ export function CombinedModelSelector({
   const handleTriggerPress = useCallback(() => {
     handleOpenChange(!isOpen);
   }, [handleOpenChange, isOpen]);
+
+  useKeyboardActionHandler({
+    handlerId: keyboardHandlerIdRef.current,
+    actions: ["agent.model.select"],
+    enabled: !disabled,
+    priority: 100,
+    handle: () => {
+      if (!disabled) handleOpenChange(true);
+      return true;
+    },
+  });
+
+  // 모델 선택 창이 열려 있을 때 ↑/↓/Enter/Escape 키 처리 (웹 전용)
+  useEffect(() => {
+    if (!isWeb || !isOpen) return () => {};
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown" && e.key !== "Enter" && e.key !== "Escape") {
+        return;
+      }
+      const rows = resolveVisibleModelRows({
+        view: browser.view,
+        providers: browser.providers,
+        searchQuery: browser.searchQuery,
+        isSearchFocused: browser.isSearchFocused,
+      });
+      if (e.key === "Escape") {
+        e.preventDefault();
+        handleOpenChange(false);
+        return;
+      }
+      if (!rows || rows.length === 0) return;
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const focused = rows.find((r) => r.favoriteKey === focusedModelKey);
+        if (focused) handleSelect(focused.provider, focused.modelId);
+        return;
+      }
+      e.preventDefault();
+      const delta = e.key === "ArrowDown" ? 1 : -1;
+      const currentIndex = rows.findIndex((r) => r.favoriteKey === focusedModelKey);
+      let nextIndex: number;
+      if (currentIndex === -1) {
+        nextIndex = delta === 1 ? 0 : rows.length - 1;
+      } else {
+        nextIndex = (currentIndex + delta + rows.length) % rows.length;
+      }
+      setFocusedModelKey(rows[nextIndex]?.favoriteKey ?? null);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [
+    browser.isSearchFocused,
+    browser.providers,
+    browser.searchQuery,
+    browser.view,
+    focusedModelKey,
+    handleOpenChange,
+    handleSelect,
+    isOpen,
+  ]);
 
   const triggerStyle = useCallback(
     ({ pressed, hovered }: PressableStateCallbackType & { hovered?: boolean }) => {
@@ -203,6 +274,7 @@ export function CombinedModelSelector({
       onRetryProvider={onRetryProvider}
       isRetryingProvider={isRetryingProvider}
       scrolling={modelBrowserScrolling}
+      focusedModelKey={focusedModelKey}
     />
   ) : (
     <View style={styles.sheetLoadingState}>
